@@ -128,8 +128,8 @@ Public Function PrintImages( _
     Dim baImage()       As Byte
     Dim lTargetX        As Long
     Dim lTargetY        As Long
-    Dim lTargetW         As Long
-    Dim lTargetH         As Long
+    Dim lTargetW        As Long
+    Dim lTargetH        As Long
     
     On Error GoTo EH
     '--- will use GDI+ to retrieve input images dimensions

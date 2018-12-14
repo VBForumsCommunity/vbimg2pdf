@@ -63,9 +63,9 @@ Private Sub Main()
 End Sub
 
 Private Function Process(vArgs As Variant) As Long
-    Dim sPrinterName    As String
     Dim cFiles          As Collection
     Dim vInputFiles     As Variant
+    Dim sPrinterName    As String
     Dim lIdx            As Long
     Dim sError          As String
     Dim lPos            As Long
@@ -84,7 +84,8 @@ Private Function Process(vArgs As Variant) As Long
     If LenB(m_oOpt.Item("error")) <> 0 Then
         ConsoleError "Error in command line: " & m_oOpt.Item("error") & vbCrLf & vbCrLf
         If Not (m_oOpt.Item("-h") Or m_oOpt.Item("-?") Or m_oOpt.Item("arg0") = "?") Then
-            Exit Function
+            Process = 1
+            GoTo QH
         End If
     End If
     If m_oOpt.Item("#arg") < 0 Or m_oOpt.Item("-h") Or m_oOpt.Item("-?") Or m_oOpt.Item("arg0") = "?" Then
@@ -99,7 +100,7 @@ Private Function Process(vArgs As Variant) As Long
         If m_oOpt.Item("#arg") < 0 Then
             Process = 100
         End If
-        Exit Function
+        GoTo QH
     End If
     Set cFiles = New Collection
     For lIdx = 0 To m_oOpt.Item("#arg")
@@ -181,7 +182,7 @@ Private Function Process(vArgs As Variant) As Long
     Next
     If FileExists(m_oOpt.Item("-o")) Then
         If Not m_oOpt.Item("-q") Then
-            ConsoleError m_oOpt.Item("-o") & " output sucesfully!" & vbCrLf & vbCrLf
+            ConsoleError m_oOpt.Item("-o") & " output successfully!" & vbCrLf & vbCrLf
         End If
     End If
 QH:
