@@ -143,7 +143,7 @@ Public Function PrintImages( _
     '--- setup output file
     hDC = CreateDC("", sPrinterName, 0, baDevMode(0))
     If hDC = 0 Then
-        sError = GetSystemMessage(Err.LastDllError)
+        sError = GetSystemMessage(Err.LastDllError) & " [CreateDC]"
         GoTo QH
     End If
     uInfo.cbSize = LenB(uInfo)
@@ -161,7 +161,7 @@ Public Function PrintImages( _
     lHeight = GetDeviceCaps(hDC, VERTRES) - lTop - C_Dbl(At(vMargins, 3)) * lDpiY
     '--- output images
     If StartDoc(hDC, uInfo) <= 0 Then
-        sError = GetSystemMessage(Err.LastDllError)
+        sError = GetSystemMessage(Err.LastDllError) & " [StartDoc]"
         GoTo QH
     End If
     uHeader.biSize = LenB(uHeader)
@@ -201,7 +201,7 @@ QH:
     End If
     Exit Function
 EH:
-    sError = "[&H" & Hex(Err.Number) & "] Critical: " & Err.Description & " [PrintImages]"
+    sError = "Critical error: " & Err.Description & " (0x" & Hex(Err.Number) & ") [PrintImages]"
     Resume QH
 End Function
 
@@ -252,7 +252,7 @@ QH:
     End If
     Exit Function
 EH:
-    sError = "[&H" & Hex(Err.Number) & "] Critical: " & Err.Description & " [SetupDevMode]"
+    sError = "Critical error: " & Err.Description & " (0x" & Hex(Err.Number) & ") [SetupDevMode]"
     Resume QH
 End Function
 
@@ -264,7 +264,7 @@ Private Function GetImageDimensions(sFile As String, lWidth As Long, lHeight As 
     On Error GoTo EH
     If GdipLoadImageFromFile(StrPtr(sFile), hBitmap) <> 0 Then
         If Err.LastDllError = 0 Then
-            sError = "Invalid image: " & Mid$(sFile, InStrRev(sFile, "\") + 1) & " [GdipLoadImageFromFile]"
+            sError = "File '" & Mid$(sFile, InStrRev(sFile, "\") + 1) & "' is invalid image [GdipLoadImageFromFile]"
         Else
             sError = GetSystemMessage(Err.LastDllError) & " [GdipLoadImageFromFile]"
         End If
@@ -284,7 +284,7 @@ QH:
     End If
     Exit Function
 EH:
-    sError = "[&H" & Hex(Err.Number) & "] Critical: " & Err.Description & " [GetImageDimensions]"
+    sError = "Critical error: " & Err.Description & " (0x" & Hex(Err.Number) & ") [GetImageDimensions]"
     Resume QH
 End Function
 
@@ -336,7 +336,7 @@ Private Function GetSystemMessage(ByVal lLastDllError As Long) As String
             lSize = lSize - 2
         End If
     End If
-    GetSystemMessage = "[" & lLastDllError & "] " & Left$(GetSystemMessage, lSize)
+    GetSystemMessage = Left$(GetSystemMessage, lSize) & " (" & lLastDllError & ")"
 End Function
 
 Private Function At(vArray As Variant, ByVal lIdx As Long) As Variant

@@ -76,6 +76,7 @@ Private Function Process(vArgs As Variant) As Long
     Dim uPapers()       As UcsPaperInfoType
     Dim sText           As String
     
+    On Error GoTo EH
     Set m_oOpt = GetOpt(vArgs, "printer:orientation:paper:margins:o")
     If Not m_oOpt.Item("-nologo") And Not m_oOpt.Item("-q") Then
         ConsoleError App.ProductName & " " & App.Major & "." & App.Minor & " (c) 2018 by wqweto@gmail.com" & vbCrLf
@@ -98,7 +99,7 @@ Private Function Process(vArgs As Variant) As Long
             "  -q                 in quiet operation outputs only errors" & vbCrLf & _
             "  -nologo            suppress startup banner" & vbCrLf
         If m_oOpt.Item("#arg") < 0 Then
-            Process = 100
+            Process = 1
         End If
         GoTo QH
     End If
@@ -120,6 +121,11 @@ Private Function Process(vArgs As Variant) As Long
             End If
         End If
     Next
+    If cFiles.Count = 0 Then
+        ConsoleError "No input files found" & vbCrLf
+        Process = 1
+        GoTo QH
+    End If
     ReDim vInputFiles(0 To cFiles.Count - 1) As String
     For lIdx = 1 To cFiles.Count
         vInputFiles(lIdx - 1) = cFiles.Item(lIdx)
@@ -147,10 +153,10 @@ Private Function Process(vArgs As Variant) As Long
             Next
         End If
         If lPaperSize = 0 Then
+            If LenB(sText) <> 0 Then
+                sText = ". Not from " & Mid$(sText, 3)
+            End If
             If Not m_oOpt.Item("-q") Then
-                If LenB(sText) <> 0 Then
-                    sText = ". Not from " & Mid$(sText, 3)
-                End If
                 ConsoleError "Warning: '%1' paper ignored" & sText & vbCrLf, m_oOpt.Item("-paper")
             End If
         End If
@@ -170,7 +176,7 @@ Private Function Process(vArgs As Variant) As Long
             lOrientation:=lOrientation, _
             vMargins:=vMargins, _
             sError:=sError) Then
-        ConsoleError sError & vbCrLf & vbCrLf
+        ConsoleError sError & vbCrLf
         Process = 2
         GoTo QH
     End If
@@ -182,10 +188,14 @@ Private Function Process(vArgs As Variant) As Long
     Next
     If FileExists(m_oOpt.Item("-o")) Then
         If Not m_oOpt.Item("-q") Then
-            ConsoleError m_oOpt.Item("-o") & " output successfully!" & vbCrLf & vbCrLf
+            ConsoleError "File '%1' output successfully!" & vbCrLf, m_oOpt.Item("-o")
         End If
     End If
 QH:
+    Exit Function
+EH:
+    ConsoleError "Critical error: " & Err.Description & " (0x" & Hex(Err.Number) & ") [Process]" & vbCrLf
+    Resume QH
 End Function
 
 Private Function SplitArgs(sText As String) As Variant
@@ -346,7 +356,7 @@ Private Function EnumFiles( _
     Do While LenB(sFile) <> 0
         If sFile <> "." And sFile <> ".." Then
             sFile = PathCombine(sFolder, sFile)
-            If (GetAttr(sFile) And eAttrib) = eAttrib Then
+            If (GetFileAttributes(sFile) And eAttrib + vbVolume) = eAttrib Then
                 RetVal.Add sFile
             End If
         End If
