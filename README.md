@@ -9,12 +9,12 @@ Can be used to embed jpeg/png images in a single pdf file without resizing and r
 
  - Generate `output.pdf` from all jpegs in current folder
 ```
-    c:> vbimg2pdf.exe *.jpg -o output.pdf
+c:> vbimg2pdf.exe *.jpg -o output.pdf
 ```
 ### Command-line
 ```
 vbimg2pdf 0.1 (c) 2018 by wqweto@gmail.com
-Convert jpeg/png images to multi-page pdf
+Convert jpeg/png images to multi-page pdf file
 
 Usage: vbimg2pdf.exe [options] <in_file.jpg> ...
 
