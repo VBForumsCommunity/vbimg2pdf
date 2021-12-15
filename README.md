@@ -11,6 +11,17 @@ Can be used to embed jpeg/png images in a single pdf file without resizing and r
 ```
 c:> vbimg2pdf.exe *.jpg -o output.pdf
 ```
+- Create a two-page .xps file (Undocumented) with *Letter* paper size with *Landscape* page orientation and 1/4" page margins
+```
+c:> vbimg2pdf.exe -printer "Microsoft XPS Document Writer" ^
+                  -paper letter ^
+                  -margins 0.25 ^
+                  -orientation l ^
+                  C:\Work\Temp\vbimg2pdf\jpegs\Data_1.jpg ^
+                  C:\Work\Temp\vbimg2pdf\jpegs\Data_7.jpg ^
+                  -o d:\temp\ccc.xps 
+```
+
 ### Command-line
 ```
 vbimg2pdf 0.1 (c) 2018 by wqweto@gmail.com
